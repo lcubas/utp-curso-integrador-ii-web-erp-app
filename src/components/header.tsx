@@ -1,5 +1,5 @@
+import type { UserRole } from "@/app/generated/prisma/enums";
 import { UserButton } from "@clerk/nextjs";
-import type { UserRole } from "../../app/generated/prisma/enums";
 
 interface HeaderProps {
   user: {

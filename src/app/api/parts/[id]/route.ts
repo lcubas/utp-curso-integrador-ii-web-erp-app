@@ -5,11 +5,12 @@ import { updatePartSchema } from "@/lib/validations/part";
 
 // GET - Obtener un repuesto específico
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: partId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -24,7 +25,7 @@ export async function GET(
     }
 
     const part = await prisma.part.findUnique({
-      where: { id: params.id },
+      where: { id: partId },
       include: {
         partRequests: {
           include: {
@@ -61,10 +62,11 @@ export async function GET(
 // PATCH - Actualizar repuesto
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: partId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -87,7 +89,7 @@ export async function PATCH(
         where: { code: validatedData.code },
       });
 
-      if (existingPart && existingPart.id !== params.id) {
+      if (existingPart && existingPart.id !== partId) {
         return NextResponse.json(
           { error: "Ya existe un repuesto con ese código" },
           { status: 400 },
@@ -96,7 +98,7 @@ export async function PATCH(
     }
 
     const updatedPart = await prisma.part.update({
-      where: { id: params.id },
+      where: { id: partId },
       data: validatedData,
     });
 
@@ -127,11 +129,12 @@ export async function PATCH(
 
 // DELETE - Eliminar repuesto
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: partId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -147,7 +150,7 @@ export async function DELETE(
 
     // Verificar si el repuesto tiene solicitudes asociadas
     const part = await prisma.part.findUnique({
-      where: { id: params.id },
+      where: { id: partId },
       include: {
         _count: {
           select: {
@@ -165,7 +168,7 @@ export async function DELETE(
     }
 
     await prisma.part.delete({
-      where: { id: params.id },
+      where: { id: partId },
     });
 
     return NextResponse.json({ message: "Repuesto eliminado exitosamente" });

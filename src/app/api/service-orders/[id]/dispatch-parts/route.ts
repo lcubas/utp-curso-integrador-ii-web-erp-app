@@ -11,9 +11,7 @@ interface LowStockPart {
 }
 
 // POST - Despachar repuestos de la orden
-export async function POST(
-  request: NextRequest,
-) {
+export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
 

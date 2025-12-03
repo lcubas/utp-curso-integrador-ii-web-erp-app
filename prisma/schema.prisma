@@ -1,0 +1,217 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enum para roles de usuario
+enum UserRole {
+  ADMIN
+  ASESOR
+  MECANICO
+}
+
+enum ServiceOrderStatus {
+  EN_PROCESO
+  PAUSADO
+  COMPLETADO
+}
+
+enum AppointmentStatus {
+  PENDIENTE
+  CONFIRMADA
+  CANCELADA
+}
+
+// Usuario del sistema (sincronizado con Clerk)
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique // ID de Clerk
+  email     String   @unique
+  name      String?
+  role      UserRole @default(ASESOR)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  serviceOrders ServiceOrder[]
+  invoices      Invoice[]
+  payments      Payment[]
+
+  @@index([clerkId])
+  @@index([email])
+}
+
+// Cliente externo
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  vehicles      Vehicle[]
+  serviceOrders ServiceOrder[]
+  invoices      Invoice[]
+  appointments  Appointment[]
+
+  @@index([name])
+  @@index([email])
+}
+
+// Vehículo del cliente
+model Vehicle {
+  id         String   @id @default(cuid())
+  customerId String
+  brand      String // Marca
+  model      String // Modelo
+  plate      String   @unique // Placa
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relaciones
+  customer      Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  serviceOrders ServiceOrder[]
+
+  @@index([customerId])
+  @@index([plate])
+}
+
+// Repuesto/pieza
+model Part {
+  id        String   @id @default(cuid())
+  code      String   @unique // Código del repuesto
+  name      String
+  stock     Int      @default(0) // Cantidad en stock
+  price     Float // Precio unitario
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  partRequests PartRequest[]
+
+  @@index([code])
+  @@index([name])
+}
+
+// Orden de servicio
+model ServiceOrder {
+  id          String             @id @default(cuid())
+  orderNumber String             @unique // Número de orden (ej: "4729237")
+  customerId  String
+  vehicleId   String
+  userId      String // Usuario que creó la orden (Asesor)
+  diagnosis   String? // Diagnóstico inicial
+  status      ServiceOrderStatus @default(EN_PROCESO)
+  cost        Float?             @default(0) // Costo de mano de obra
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  // Relaciones
+  customer     Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id])
+  partRequests PartRequest[]
+  invoice      Invoice?
+
+  @@index([orderNumber])
+  @@index([customerId])
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([status])
+}
+
+// Solicitud de repuestos para una orden
+model PartRequest {
+  id             String  @id @default(cuid())
+  serviceOrderId String
+  partId         String
+  quantity       Int
+  reason         String? // Motivo de la solicitud
+  dispatched     Boolean @default(false) // Si ya fue despachado
+
+  // Relaciones
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  part         Part         @relation(fields: [partId], references: [id], onDelete: Cascade)
+
+  @@index([serviceOrderId])
+  @@index([partId])
+}
+
+// Factura
+model Invoice {
+  id             String   @id @default(cuid())
+  invoiceNumber  String   @unique // Número de factura
+  serviceOrderId String   @unique
+  customerId     String
+  userId         String // Usuario que generó la factura (Asesor)
+  dni            String? // DNI o RUC del cliente
+  businessName   String? // Nombre o razón social
+  subtotal       Float
+  igv            Float // 18%
+  total          Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relaciones
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  customer     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+  payments     Payment[]
+
+  @@index([invoiceNumber])
+  @@index([serviceOrderId])
+  @@index([customerId])
+}
+
+// Pago registrado
+model Payment {
+  id            String   @id @default(cuid())
+  invoiceId     String
+  userId        String // Usuario que registró el pago
+  amount        Float
+  paymentMethod String // Efectivo, Tarjeta, Transferencia
+  createdAt     DateTime @default(now())
+
+  // Relaciones
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@index([invoiceId])
+  @@index([userId])
+}
+
+// Cita solicitada por cliente público
+model Appointment {
+  id          String            @id @default(cuid())
+  customerId  String?
+  email       String
+  phone       String
+  name        String
+  description String // Problemas del vehículo
+  date        DateTime // Fecha seleccionada
+  status      AppointmentStatus @default(PENDIENTE)
+  token       String            @unique // Token para confirmar cita
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relaciones
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([token])
+  @@index([status])
+}

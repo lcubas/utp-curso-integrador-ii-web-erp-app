@@ -116,7 +116,7 @@ export function Sidebar() {
                 "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
                 isActive
                   ? "bg-orange-100 text-orange-600 font-medium"
-                  : "text-gray-700 hover:bg-gray-100"
+                  : "text-gray-700 hover:bg-gray-100",
               )}
             >
               <Icon className="w-5 h-5" />

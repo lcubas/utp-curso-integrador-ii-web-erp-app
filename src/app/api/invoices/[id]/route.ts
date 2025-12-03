@@ -4,11 +4,12 @@ import prisma from "@/lib/prisma";
 
 // GET - Obtener una factura específica
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: invoiceId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -23,7 +24,7 @@ export async function GET(
     }
 
     const invoice = await prisma.invoice.findUnique({
-      where: { id: params.id },
+      where: { id: invoiceId },
       include: {
         customer: true,
         serviceOrder: {

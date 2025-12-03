@@ -30,6 +30,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "lucide-react": "^0.555.0",
+    "mailtrap": "^4.3.2",
     "next": "16.0.6",
     "next-themes": "^0.4.6",
     "pg": "^8.16.3",

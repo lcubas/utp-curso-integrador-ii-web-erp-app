@@ -5,18 +5,19 @@ import { updateServiceOrderSchema } from "@/lib/validations/service-order";
 
 // GET - Obtener una orden específica
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: serviceOrderId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const serviceOrder = await prisma.serviceOrder.findUnique({
-      where: { id: params.id },
+      where: { id: serviceOrderId },
       include: {
         customer: true,
         vehicle: true,
@@ -50,10 +51,11 @@ export async function GET(
 // PATCH - Actualizar orden
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: serviceOrderId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -71,7 +73,7 @@ export async function PATCH(
     const validatedData = updateServiceOrderSchema.parse(body);
 
     const updatedOrder = await prisma.serviceOrder.update({
-      where: { id: params.id },
+      where: { id: serviceOrderId },
       data: validatedData,
       include: {
         customer: true,

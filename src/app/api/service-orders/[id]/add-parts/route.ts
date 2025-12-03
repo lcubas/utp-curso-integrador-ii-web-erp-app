@@ -5,10 +5,11 @@ import prisma from "@/lib/prisma";
 // POST - Agregar repuestos a una orden existente
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: serviceOrderId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -37,7 +38,7 @@ export async function POST(
 
     // Verificar que la orden existe
     const order = await prisma.serviceOrder.findUnique({
-      where: { id: params.id },
+      where: { id: serviceOrderId },
     });
 
     if (!order) {
@@ -52,7 +53,7 @@ export async function POST(
       partRequests.map((pr: any) =>
         prisma.partRequest.create({
           data: {
-            serviceOrderId: params.id,
+            serviceOrderId,
             partId: pr.partId,
             quantity: pr.quantity,
             reason: pr.reason || null,

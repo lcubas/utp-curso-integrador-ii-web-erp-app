@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { appointmentSchema } from "@/lib/validations/appointment";
-import { resend } from "@/lib/resend";
 import { getAppointmentConfirmationEmail } from "@/lib/email-templates";
 import crypto from "crypto";
+import { mailtrap } from "@/lib/mailtrap";
 
 // GET - Listar citas (solo usuarios autenticados)
 export async function GET(request: NextRequest) {
@@ -99,9 +99,12 @@ export async function POST(request: NextRequest) {
         confirmationUrl,
       });
 
-      await resend.emails.send({
-        from: "PESANORT <onboarding@resend.dev>",
-        to: validatedData.email,
+      await mailtrap.send({
+        from: {
+          name: "PESANORT",
+          email: "hello@example.com",
+        },
+        to: [{ email: validatedData.email }],
         subject: emailData.subject,
         html: emailData.html,
       });

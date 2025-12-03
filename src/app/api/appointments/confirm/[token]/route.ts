@@ -5,13 +5,14 @@ import { getAppointmentConfirmedNotificationEmail } from "@/lib/email-templates"
 
 // POST - Confirmar cita con token
 export async function POST(
-  request: NextRequest,
-  { params }: { params: { token: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ token: string }> },
 ) {
   try {
     // Buscar cita con el token
+    const { token } = await params;
     const appointment = await prisma.appointment.findUnique({
-      where: { token: params.token },
+      where: { token: token },
       include: {
         customer: true,
       },

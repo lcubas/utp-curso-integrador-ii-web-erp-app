@@ -5,11 +5,12 @@ import prisma from "@/lib/prisma";
 
 // GET - Obtener un usuario específico
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: paramUserId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -24,7 +25,7 @@ export async function GET(
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id: paramUserId },
     });
 
     if (!user) {
@@ -47,10 +48,11 @@ export async function GET(
 // PATCH - Actualizar usuario
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: paramUserId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -68,7 +70,7 @@ export async function PATCH(
     const validatedData = updateUserSchema.parse(body);
 
     const updatedUser = await prisma.user.update({
-      where: { id: params.id },
+      where: { id: paramUserId },
       data: validatedData,
     });
 
@@ -99,11 +101,12 @@ export async function PATCH(
 
 // DELETE - Deshabilitar usuario (soft delete)
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: paramUserId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -119,7 +122,7 @@ export async function DELETE(
 
     // Soft delete: cambiar isActive a false
     const updatedUser = await prisma.user.update({
-      where: { id: params.id },
+      where: { id: paramUserId },
       data: { isActive: false },
     });
 

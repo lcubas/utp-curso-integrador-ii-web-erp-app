@@ -6,10 +6,11 @@ import { adjustStockSchema } from "@/lib/validations/part";
 // POST - Ajustar stock del repuesto
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: partId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -27,7 +28,7 @@ export async function POST(
     const validatedData = adjustStockSchema.parse(body);
 
     const part = await prisma.part.findUnique({
-      where: { id: params.id },
+      where: { id: partId },
     });
 
     if (!part) {
@@ -53,7 +54,7 @@ export async function POST(
 
     // Actualizar stock
     const updatedPart = await prisma.part.update({
-      where: { id: params.id },
+      where: { id: partId },
       data: { stock: newStock },
     });
 

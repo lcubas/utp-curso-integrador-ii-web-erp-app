@@ -4,10 +4,15 @@ import prisma from "@/lib/prisma";
 import { resend } from "@/lib/resend";
 import { getLowStockAlertEmail } from "@/lib/email-templates";
 
+interface LowStockPart {
+  name: string;
+  code: string;
+  stock: number;
+}
+
 // POST - Despachar repuestos de la orden
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = await auth();
@@ -34,8 +39,7 @@ export async function POST(
       );
     }
 
-    const lowStockParts: Array<{ name: string; code: string; stock: number }> =
-      [];
+    const lowStockParts: LowStockPart[] = [];
     const insufficientStockParts: string[] = [];
 
     // Procesar cada solicitud de repuesto

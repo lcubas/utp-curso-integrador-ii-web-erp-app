@@ -7,10 +7,11 @@ import { getServiceOrderStatusEmail } from "@/lib/email-templates";
 // POST - Cambiar estado de la orden y notificar al cliente
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: serviceOrderId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -33,7 +34,7 @@ export async function POST(
 
     // Actualizar estado
     const updatedOrder = await prisma.serviceOrder.update({
-      where: { id: params.id },
+      where: { id: serviceOrderId },
       data: { status },
       include: {
         customer: true,

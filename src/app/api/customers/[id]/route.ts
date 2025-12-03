@@ -5,11 +5,12 @@ import { updateCustomerSchema } from "@/lib/validations/customer";
 
 // GET - Obtener un cliente específico
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: customerId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -24,7 +25,7 @@ export async function GET(
     }
 
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id: customerId },
       include: {
         vehicles: true,
         serviceOrders: {
@@ -63,10 +64,11 @@ export async function GET(
 // PATCH - Actualizar cliente
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: customerId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -84,7 +86,7 @@ export async function PATCH(
     const validatedData = updateCustomerSchema.parse(body);
 
     const updatedCustomer = await prisma.customer.update({
-      where: { id: params.id },
+      where: { id: customerId },
       data: {
         ...(validatedData.name && { name: validatedData.name }),
         ...(validatedData.email !== undefined && {
@@ -126,11 +128,12 @@ export async function PATCH(
 
 // DELETE - Eliminar cliente
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } },
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { userId } = await auth();
+    const { id: customerId } = await params;
 
     if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -146,7 +149,7 @@ export async function DELETE(
 
     // Verificar si el cliente tiene órdenes de servicio
     const customer = await prisma.customer.findUnique({
-      where: { id: params.id },
+      where: { id: customerId },
       include: {
         _count: {
           select: {
@@ -164,7 +167,7 @@ export async function DELETE(
     }
 
     await prisma.customer.delete({
-      where: { id: params.id },
+      where: { id: customerId },
     });
 
     return NextResponse.json({ message: "Cliente eliminado exitosamente" });

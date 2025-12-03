@@ -74,7 +74,7 @@ export function ServiceOrderTable({
             ) : (
               orders.map((order) => {
                 const pendingParts = order.partRequests.filter(
-                  (pr) => !pr.dispatched
+                  (pr) => !pr.dispatched,
                 );
 
                 return (

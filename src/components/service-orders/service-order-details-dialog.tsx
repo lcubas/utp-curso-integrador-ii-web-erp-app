@@ -69,7 +69,7 @@ export function ServiceOrderDetailsDialog({
 
   const totalParts = order.partRequests.reduce(
     (sum, pr) => sum + pr.part.price * pr.quantity,
-    0
+    0,
   );
   const totalGeneral = (order.cost || 0) + totalParts;
 
@@ -94,8 +94,8 @@ export function ServiceOrderDetailsDialog({
                 order.status === "COMPLETADO"
                   ? "default"
                   : order.status === "EN_PROCESO"
-                  ? "secondary"
-                  : "destructive"
+                    ? "secondary"
+                    : "destructive"
               }
               className="text-base px-4 py-1"
             >

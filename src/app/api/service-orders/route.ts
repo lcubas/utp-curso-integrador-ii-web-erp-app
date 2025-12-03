@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import prisma from '@/lib/prisma';
-import { serviceOrderSchema } from '@/lib/validations/service-order';
-import { generateOrderNumber } from '@/lib/utils';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
+import { serviceOrderSchema } from "@/lib/validations/service-order";
+import { generateOrderNumber } from "@/lib/utils";
 
 // GET - Listar órdenes de servicio
 export async function GET(request: NextRequest) {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
@@ -18,12 +18,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (!currentUser) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;
-    const status = searchParams.get('status');
-    const customerId = searchParams.get('customerId');
+    const status = searchParams.get("status");
+    const customerId = searchParams.get("customerId");
 
     let whereClause: any = {};
 
@@ -47,15 +47,15 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(serviceOrders);
   } catch (error) {
-    console.error('Error al obtener órdenes:', error);
+    console.error("Error al obtener órdenes:", error);
     return NextResponse.json(
-      { error: 'Error al obtener órdenes' },
-      { status: 500 }
+      { error: "Error al obtener órdenes" },
+      { status: 500 },
     );
   }
 }
@@ -66,15 +66,15 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
-    if (!currentUser || !['ADMIN', 'ASESOR'].includes(currentUser.role)) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    if (!currentUser || !["ADMIN", "ASESOR"].includes(currentUser.role)) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -105,12 +105,12 @@ export async function POST(request: NextRequest) {
         cost: validatedData.cost || 0,
         partRequests: validatedData.partRequests
           ? {
-            create: validatedData.partRequests.map((pr) => ({
-              partId: pr.partId,
-              quantity: pr.quantity,
-              reason: pr.reason || null,
-            })),
-          }
+              create: validatedData.partRequests.map((pr) => ({
+                partId: pr.partId,
+                quantity: pr.quantity,
+                reason: pr.reason || null,
+              })),
+            }
           : undefined,
       },
       include: {
@@ -127,18 +127,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newServiceOrder, { status: 201 });
   } catch (error: any) {
-    console.error('Error al crear orden:', error);
+    console.error("Error al crear orden:", error);
 
-    if (error.name === 'ZodError') {
+    if (error.name === "ZodError") {
       return NextResponse.json(
-        { error: 'Datos inválidos', details: error.errors },
-        { status: 400 }
+        { error: "Datos inválidos", details: error.errors },
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
-      { error: 'Error al crear orden' },
-      { status: 500 }
+      { error: "Error al crear orden" },
+      { status: 500 },
     );
   }
 }

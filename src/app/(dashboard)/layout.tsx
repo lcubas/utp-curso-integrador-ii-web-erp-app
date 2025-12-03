@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/header";
 import prisma from "@/lib/prisma";
 import { Sidebar } from "@/components/sidebar";
+import { UserProvider } from "@/lib/user-context";
 
 export default async function DashboardLayout({
   children,
@@ -38,13 +39,21 @@ export default async function DashboardLayout({
     redirect("/sign-in");
   }
 
+  const userData = {
+    role: dbUser.role,
+    name: dbUser.name,
+    email: dbUser.email,
+  };
+
   return (
-    <div className="flex min-h-screen">
-      <Sidebar user={dbUser} />
-      <div className="flex-1 flex flex-col">
-        <Header user={dbUser} />
-        <main className="flex-1 p-6 bg-gray-50">{children}</main>
+    <UserProvider userData={userData}>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <div className="flex-1 flex flex-col">
+          <Header user={dbUser} />
+          <main className="flex-1 p-6 bg-gray-50">{children}</main>
+        </div>
       </div>
-    </div>
+    </UserProvider>
   );
 }

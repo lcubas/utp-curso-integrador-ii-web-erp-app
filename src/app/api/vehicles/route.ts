@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import prisma from '@/lib/prisma';
-import { vehicleSchema } from '@/lib/validations/vehicle';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
+import { vehicleSchema } from "@/lib/validations/vehicle";
 
 // GET - Listar vehículos (filtrar por cliente si se proporciona)
 export async function GET(request: NextRequest) {
@@ -9,34 +9,37 @@ export async function GET(request: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
-    if (!currentUser || !['ADMIN', 'ASESOR', 'MECANICO'].includes(currentUser.role)) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    if (
+      !currentUser ||
+      !["ADMIN", "ASESOR", "MECANICO"].includes(currentUser.role)
+    ) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const searchParams = request.nextUrl.searchParams;
-    const customerId = searchParams.get('customerId');
+    const customerId = searchParams.get("customerId");
 
     const vehicles = await prisma.vehicle.findMany({
       where: customerId ? { customerId } : {},
       include: {
         customer: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(vehicles);
   } catch (error) {
-    console.error('Error al obtener vehículos:', error);
+    console.error("Error al obtener vehículos:", error);
     return NextResponse.json(
-      { error: 'Error al obtener vehículos' },
-      { status: 500 }
+      { error: "Error al obtener vehículos" },
+      { status: 500 },
     );
   }
 }
@@ -47,15 +50,18 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
-    if (!currentUser || !['ADMIN', 'ASESOR', 'MECANICO'].includes(currentUser.role)) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    if (
+      !currentUser ||
+      !["ADMIN", "ASESOR", "MECANICO"].includes(currentUser.role)
+    ) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -68,8 +74,8 @@ export async function POST(request: NextRequest) {
 
     if (existingVehicle) {
       return NextResponse.json(
-        { error: 'Ya existe un vehículo con esa placa' },
-        { status: 400 }
+        { error: "Ya existe un vehículo con esa placa" },
+        { status: 400 },
       );
     }
 
@@ -87,18 +93,18 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(newVehicle, { status: 201 });
   } catch (error: any) {
-    console.error('Error al crear vehículo:', error);
+    console.error("Error al crear vehículo:", error);
 
-    if (error.name === 'ZodError') {
+    if (error.name === "ZodError") {
       return NextResponse.json(
-        { error: 'Datos inválidos', details: error.errors },
-        { status: 400 }
+        { error: "Datos inválidos", details: error.errors },
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
-      { error: 'Error al crear vehículo' },
-      { status: 500 }
+      { error: "Error al crear vehículo" },
+      { status: 500 },
     );
   }
 }

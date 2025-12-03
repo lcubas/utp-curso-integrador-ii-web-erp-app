@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import prisma from '@/lib/prisma';
-import { updateServiceOrderSchema } from '@/lib/validations/service-order';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
+import { updateServiceOrderSchema } from "@/lib/validations/service-order";
 
 // GET - Obtener una orden específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const serviceOrder = await prisma.serviceOrder.findUnique({
@@ -32,17 +32,17 @@ export async function GET(
 
     if (!serviceOrder) {
       return NextResponse.json(
-        { error: 'Orden no encontrada' },
-        { status: 404 }
+        { error: "Orden no encontrada" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json(serviceOrder);
   } catch (error) {
-    console.error('Error al obtener orden:', error);
+    console.error("Error al obtener orden:", error);
     return NextResponse.json(
-      { error: 'Error al obtener orden' },
-      { status: 500 }
+      { error: "Error al obtener orden" },
+      { status: 500 },
     );
   }
 }
@@ -50,21 +50,21 @@ export async function GET(
 // PATCH - Actualizar orden
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
-    if (!currentUser || !['ADMIN', 'ASESOR'].includes(currentUser.role)) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    if (!currentUser || !["ADMIN", "ASESOR"].includes(currentUser.role)) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -86,25 +86,25 @@ export async function PATCH(
 
     return NextResponse.json(updatedOrder);
   } catch (error: any) {
-    console.error('Error al actualizar orden:', error);
+    console.error("Error al actualizar orden:", error);
 
-    if (error.name === 'ZodError') {
+    if (error.name === "ZodError") {
       return NextResponse.json(
-        { error: 'Datos inválidos', details: error.errors },
-        { status: 400 }
+        { error: "Datos inválidos", details: error.errors },
+        { status: 400 },
       );
     }
 
-    if (error.code === 'P2025') {
+    if (error.code === "P2025") {
       return NextResponse.json(
-        { error: 'Orden no encontrada' },
-        { status: 404 }
+        { error: "Orden no encontrada" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json(
-      { error: 'Error al actualizar orden' },
-      { status: 500 }
+      { error: "Error al actualizar orden" },
+      { status: 500 },
     );
   }
 }

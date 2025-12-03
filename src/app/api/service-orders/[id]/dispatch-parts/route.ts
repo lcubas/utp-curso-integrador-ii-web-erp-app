@@ -1,27 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import prisma from '@/lib/prisma';
-import { resend } from '@/lib/resend';
-import { getLowStockAlertEmail } from '@/lib/email-templates';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
+import { resend } from "@/lib/resend";
+import { getLowStockAlertEmail } from "@/lib/email-templates";
 
 // POST - Despachar repuestos de la orden
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
-    if (!currentUser || !['ADMIN', 'ASESOR'].includes(currentUser.role)) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    if (!currentUser || !["ADMIN", "ASESOR"].includes(currentUser.role)) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -29,12 +29,13 @@ export async function POST(
 
     if (!Array.isArray(partRequestIds) || partRequestIds.length === 0) {
       return NextResponse.json(
-        { error: 'Debe proporcionar solicitudes a despachar' },
-        { status: 400 }
+        { error: "Debe proporcionar solicitudes a despachar" },
+        { status: 400 },
       );
     }
 
-    const lowStockParts: Array<{ name: string; code: string; stock: number }> = [];
+    const lowStockParts: Array<{ name: string; code: string; stock: number }> =
+      [];
     const insufficientStockParts: string[] = [];
 
     // Procesar cada solicitud de repuesto
@@ -49,7 +50,7 @@ export async function POST(
       // Verificar stock suficiente
       if (partRequest.part.stock < partRequest.quantity) {
         insufficientStockParts.push(
-          `${partRequest.part.name} (requiere ${partRequest.quantity}, disponible ${partRequest.part.stock})`
+          `${partRequest.part.name} (requiere ${partRequest.quantity}, disponible ${partRequest.part.stock})`,
         );
         continue;
       }
@@ -84,45 +85,49 @@ export async function POST(
     if (insufficientStockParts.length > 0) {
       return NextResponse.json(
         {
-          error: 'Stock insuficiente',
+          error: "Stock insuficiente",
           details: insufficientStockParts,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Enviar alertas de stock bajo
     for (const part of lowStockParts) {
       try {
-        const emailData = getLowStockAlertEmail(part.name, part.code, part.stock);
-        
+        const emailData = getLowStockAlertEmail(
+          part.name,
+          part.code,
+          part.stock,
+        );
+
         // Obtener email del admin o asesor para notificar
         const adminUser = await prisma.user.findFirst({
-          where: { role: 'ADMIN', isActive: true },
+          where: { role: "ADMIN", isActive: true },
         });
 
         if (adminUser?.email) {
           await resend.emails.send({
-            from: 'PESANORT <onboarding@resend.dev>',
+            from: "PESANORT <onboarding@resend.dev>",
             to: adminUser.email,
             subject: emailData.subject,
             html: emailData.html,
           });
         }
       } catch (emailError) {
-        console.error('Error al enviar alerta de stock:', emailError);
+        console.error("Error al enviar alerta de stock:", emailError);
       }
     }
 
     return NextResponse.json({
-      message: 'Repuestos despachados exitosamente',
+      message: "Repuestos despachados exitosamente",
       lowStockAlerts: lowStockParts.length,
     });
   } catch (error: any) {
-    console.error('Error al despachar repuestos:', error);
+    console.error("Error al despachar repuestos:", error);
     return NextResponse.json(
-      { error: 'Error al despachar repuestos' },
-      { status: 500 }
+      { error: "Error al despachar repuestos" },
+      { status: 500 },
     );
   }
 }

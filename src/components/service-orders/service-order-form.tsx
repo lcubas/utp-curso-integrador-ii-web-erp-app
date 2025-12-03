@@ -44,7 +44,7 @@ export function ServiceOrderForm({ onSuccess }: ServiceOrderFormProps) {
 
   const form = useForm<ServiceOrderFormData>({
     resolver: zodResolver(
-      serviceOrderSchema
+      serviceOrderSchema,
     ) as unknown as Resolver<ServiceOrderFormData>,
     defaultValues: {
       customerId: "",
@@ -92,7 +92,7 @@ export function ServiceOrderForm({ onSuccess }: ServiceOrderFormProps) {
       const fetchVehicles = async () => {
         try {
           const response = await fetch(
-            `/api/vehicles?customerId=${selectedCustomerId}`
+            `/api/vehicles?customerId=${selectedCustomerId}`,
           );
           if (response.ok) {
             const data = await response.json();
@@ -400,7 +400,7 @@ export function ServiceOrderForm({ onSuccess }: ServiceOrderFormProps) {
             setShowVehicleDialog(false);
             // Recargar vehículos
             const response = await fetch(
-              `/api/vehicles?customerId=${selectedCustomerId}`
+              `/api/vehicles?customerId=${selectedCustomerId}`,
             );
             if (response.ok) {
               const data = await response.json();

@@ -1,37 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import prisma from '@/lib/prisma';
-import { resend } from '@/lib/resend';
-import { getServiceOrderStatusEmail } from '@/lib/email-templates';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
+import { resend } from "@/lib/resend";
+import { getServiceOrderStatusEmail } from "@/lib/email-templates";
 
 // POST - Cambiar estado de la orden y notificar al cliente
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const { userId } = await auth();
 
     if (!userId) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const currentUser = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
-    if (!currentUser || !['ADMIN', 'ASESOR'].includes(currentUser.role)) {
-      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    if (!currentUser || !["ADMIN", "ASESOR"].includes(currentUser.role)) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     const body = await request.json();
     const { status } = body;
 
-    if (!['EN_PROCESO', 'PAUSADO', 'COMPLETADO'].includes(status)) {
-      return NextResponse.json(
-        { error: 'Estado inválido' },
-        { status: 400 }
-      );
+    if (!["EN_PROCESO", "PAUSADO", "COMPLETADO"].includes(status)) {
+      return NextResponse.json({ error: "Estado inválido" }, { status: 400 });
     }
 
     // Actualizar estado
@@ -57,31 +54,31 @@ export async function POST(
         });
 
         await resend.emails.send({
-          from: 'PESANORT <onboarding@resend.dev>', // Cambiar por tu dominio verificado
+          from: "PESANORT <onboarding@resend.dev>", // Cambiar por tu dominio verificado
           to: updatedOrder.customer.email,
           subject: emailData.subject,
           html: emailData.html,
         });
       } catch (emailError) {
-        console.error('Error al enviar email:', emailError);
+        console.error("Error al enviar email:", emailError);
         // No fallar la request si el email falla
       }
     }
 
     return NextResponse.json(updatedOrder);
   } catch (error: any) {
-    console.error('Error al cambiar estado:', error);
+    console.error("Error al cambiar estado:", error);
 
-    if (error.code === 'P2025') {
+    if (error.code === "P2025") {
       return NextResponse.json(
-        { error: 'Orden no encontrada' },
-        { status: 404 }
+        { error: "Orden no encontrada" },
+        { status: 404 },
       );
     }
 
     return NextResponse.json(
-      { error: 'Error al cambiar estado' },
-      { status: 500 }
+      { error: "Error al cambiar estado" },
+      { status: 500 },
     );
   }
 }

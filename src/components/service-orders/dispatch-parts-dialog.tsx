@@ -46,7 +46,7 @@ export function DispatchPartsDialog({
     setSelectedParts((prev) =>
       prev.includes(partRequestId)
         ? prev.filter((id) => id !== partRequestId)
-        : [...prev, partRequestId]
+        : [...prev, partRequestId],
     );
   };
 
@@ -65,7 +65,7 @@ export function DispatchPartsDialog({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ partRequestIds: selectedParts }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -81,7 +81,7 @@ export function DispatchPartsDialog({
       const result = await response.json();
       if (result.lowStockAlerts > 0) {
         alert(
-          `Repuestos despachados. ${result.lowStockAlerts} repuesto(s) con stock bajo.`
+          `Repuestos despachados. ${result.lowStockAlerts} repuesto(s) con stock bajo.`,
         );
       }
 

@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -17,10 +17,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { vehicleSchema, VehicleFormData } from '@/lib/validations/vehicle';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { vehicleSchema, VehicleFormData } from "@/lib/validations/vehicle";
 
 interface VehicleFormDialogProps {
   customerId: string;
@@ -39,9 +39,9 @@ export function VehicleFormDialog({
     resolver: zodResolver(vehicleSchema),
     defaultValues: {
       customerId,
-      brand: '',
-      model: '',
-      plate: '',
+      brand: "",
+      model: "",
+      plate: "",
     },
   });
 
@@ -49,21 +49,21 @@ export function VehicleFormDialog({
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/vehicles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/vehicles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al registrar vehículo');
+        throw new Error(errorData.error || "Error al registrar vehículo");
       }
 
       onSuccess();
     } catch (error: any) {
-      console.error('Error:', error);
-      alert(error.message || 'Error al registrar el vehículo');
+      console.error("Error:", error);
+      alert(error.message || "Error al registrar el vehículo");
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +102,10 @@ export function VehicleFormDialog({
                 <FormItem>
                   <FormLabel>Modelo *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Corolla, Versa, Territory..." {...field} />
+                    <Input
+                      placeholder="Corolla, Versa, Territory..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -134,7 +137,7 @@ export function VehicleFormDialog({
                 Cancelar
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? 'Registrando...' : 'Registrar'}
+                {isLoading ? "Registrando..." : "Registrar"}
               </Button>
             </div>
           </form>

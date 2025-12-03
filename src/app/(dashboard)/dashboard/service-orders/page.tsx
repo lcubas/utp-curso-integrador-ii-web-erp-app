@@ -63,7 +63,7 @@ export default function ServiceOrdersPage() {
           order.customer.name
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          order.vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase())
+          order.vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -78,7 +78,7 @@ export default function ServiceOrdersPage() {
   const enProcesoCount = orders.filter((o) => o.status === "EN_PROCESO").length;
   const pausadoCount = orders.filter((o) => o.status === "PAUSADO").length;
   const completadoCount = orders.filter(
-    (o) => o.status === "COMPLETADO"
+    (o) => o.status === "COMPLETADO",
   ).length;
 
   return (

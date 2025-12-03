@@ -8,6 +8,7 @@ import { Wrench, CheckCircle } from "lucide-react";
 import { CustomerSearch } from "@/components/reception/customer-search";
 import { VehicleSelector } from "@/components/reception/vehicle-selector";
 import { Customer } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 export default function ReceptionPage() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function ReceptionPage() {
 
   const handleSubmit = async () => {
     if (!selectedCustomer || !selectedVehicleId) {
-      alert("Debe seleccionar un cliente y un vehículo");
+      toast.warning("Debe seleccionar un cliente y un vehículo");
       return;
     }
 
@@ -45,7 +46,7 @@ export default function ReceptionPage() {
       }
 
       const newOrder = await response.json();
-      alert(
+      toast.success(
         `Recepción registrada exitosamente. Orden #${newOrder.orderNumber}`,
       );
 

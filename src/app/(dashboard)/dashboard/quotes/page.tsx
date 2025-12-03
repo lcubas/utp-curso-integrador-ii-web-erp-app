@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { ServiceOrderForm } from "@/components/service-orders/service-order-form";
+import { toast } from "sonner";
 
 export default function QuotesPage() {
   const router = useRouter();
 
   const handleSuccess = (orderId: string) => {
-    alert("Cotización creada exitosamente");
+    toast.success("Cotización creada exitosamente");
     router.push(`/dashboard/service-orders`);
   };
 

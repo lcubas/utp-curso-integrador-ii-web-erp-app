@@ -17,6 +17,7 @@ import type {
   ServiceOrder,
   Vehicle,
 } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface ServiceOrderWithDetails extends ServiceOrder {
   customer: Customer;
@@ -45,7 +46,7 @@ export function ServiceOrderDetailsDialog({
         setOrder(data);
       } catch (error) {
         console.error("Error:", error);
-        alert("Error al cargar los detalles de la orden");
+        toast.error("Error al cargar los detalles de la orden");
         onClose();
       } finally {
         setIsLoading(false);

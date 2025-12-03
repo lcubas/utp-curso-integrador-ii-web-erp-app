@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Part } from "@/app/generated/prisma/client";
 import { AdjustStockDialog } from "./adjust-stock-dialog";
+import { toast } from "sonner";
 
 interface PartWithCount extends Part {
   _count: {
@@ -56,7 +57,7 @@ export function PartTable({ parts, onUpdate }: PartTableProps) {
       onUpdate();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al eliminar el repuesto");
+      toast.error(error.message || "Error al eliminar el repuesto");
     } finally {
       setDeletingPart(null);
     }

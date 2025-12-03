@@ -27,6 +27,7 @@ import {
   UpdatePartFormData,
 } from "@/lib/validations/part";
 import { Part } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface PartFormDialogProps {
   part?: Part;
@@ -82,7 +83,7 @@ export function PartFormDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al guardar el repuesto");
+      toast.error(error.message || "Error al guardar el repuesto");
     } finally {
       setIsLoading(false);
     }

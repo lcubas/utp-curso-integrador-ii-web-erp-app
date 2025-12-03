@@ -28,6 +28,7 @@ import {
   UpdateCustomerFormData,
 } from "@/lib/validations/customer";
 import { Customer } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface CustomerFormDialogProps {
   customer?: Customer;
@@ -83,7 +84,7 @@ export function CustomerFormDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al guardar el cliente");
+      toast.error(error.message || "Error al guardar el cliente");
     } finally {
       setIsLoading(false);
     }

@@ -3,12 +3,13 @@
 import { useRouter } from "next/navigation";
 import { Receipt } from "lucide-react";
 import { InvoiceForm } from "@/components/invoices/invoice-form";
+import { toast } from "sonner";
 
 export default function NewInvoicePage() {
   const router = useRouter();
 
   const handleSuccess = (invoiceId: string) => {
-    alert("Factura generada exitosamente");
+    toast.success("Factura generada exitosamente");
     router.push("/dashboard/invoices");
   };
 

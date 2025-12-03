@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Customer, Vehicle } from "@/app/generated/prisma/client";
 import { CustomerDetailsDialog } from "./customer-details-dialog";
+import { toast } from "sonner";
 
 interface CustomerWithRelations extends Customer {
   vehicles: Vehicle[];
@@ -58,7 +59,7 @@ export function CustomerTable({ customers, onUpdate }: CustomerTableProps) {
       onUpdate();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al eliminar el cliente");
+      toast.error(error.message || "Error al eliminar el cliente");
     } finally {
       setDeletingCustomer(null);
     }

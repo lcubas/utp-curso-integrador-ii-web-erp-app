@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Ban, Check } from "lucide-react";
 import { User, UserRole } from "@/app/generated/prisma/client";
 import { UserFormDialog } from "./user-form-dialog";
+import { toast } from "sonner";
 
 interface UserTableProps {
   users: User[];
@@ -53,7 +54,7 @@ export function UserTable({ users, onUpdate }: UserTableProps) {
       onUpdate();
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al actualizar el estado del usuario");
+      toast.error("Error al actualizar el estado del usuario");
     }
   };
 

@@ -8,6 +8,7 @@ import { PartTable } from "@/components/parts/part-table";
 import { PartFormDialog } from "@/components/parts/part-form-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Part } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface PartWithCount extends Part {
   _count: {
@@ -37,7 +38,7 @@ export default function PartsPage() {
       setFilteredParts(data);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al cargar los repuestos");
+      toast.error("Error al cargar los repuestos");
     } finally {
       setIsLoading(false);
     }

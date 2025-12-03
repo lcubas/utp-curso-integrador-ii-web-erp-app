@@ -31,6 +31,7 @@ import {
   ServiceOrder,
   Vehicle,
 } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface ServiceOrderWithDetails extends ServiceOrder {
   customer: Customer;
@@ -141,11 +142,11 @@ export default function RevisionPage() {
         }
       }
 
-      alert("Revisión registrada exitosamente");
+      toast.success("Revisión registrada exitosamente");
       router.push("/dashboard/service-orders");
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al registrar la revisión");
+      toast.error(error.message || "Error al registrar la revisión");
     } finally {
       setIsLoading(false);
     }

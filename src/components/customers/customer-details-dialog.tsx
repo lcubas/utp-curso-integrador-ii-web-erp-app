@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Phone, MapPin, Car, FileText } from "lucide-react";
 import { Customer, ServiceOrder, Vehicle } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface CustomerWithDetails extends Customer {
   vehicles: Vehicle[];
@@ -43,7 +44,7 @@ export function CustomerDetailsDialog({
         setCustomer(data);
       } catch (error) {
         console.error("Error:", error);
-        alert("Error al cargar los detalles del cliente");
+        toast.error("Error al cargar los detalles del cliente");
         onClose();
       } finally {
         setIsLoading(false);

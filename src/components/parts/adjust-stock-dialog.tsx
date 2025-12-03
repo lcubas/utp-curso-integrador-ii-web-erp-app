@@ -30,6 +30,7 @@ import {
 import { adjustStockSchema, AdjustStockData } from "@/lib/validations/part";
 import { Plus, Minus } from "lucide-react";
 import { Part } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface AdjustStockDialogProps {
   part: Part;
@@ -70,7 +71,7 @@ export function AdjustStockDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al ajustar el stock");
+      toast.error(error.message || "Error al ajustar el stock");
     } finally {
       setIsLoading(false);
     }

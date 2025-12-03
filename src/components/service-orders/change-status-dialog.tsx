@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
 import type { ServiceOrder } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface ChangeStatusDialogProps {
   order: ServiceOrder;
@@ -36,7 +37,7 @@ export function ChangeStatusDialog({
 
   const handleSubmit = async () => {
     if (newStatus === order.status) {
-      alert("Debe seleccionar un estado diferente");
+      toast.warning("Debe seleccionar un estado diferente");
       return;
     }
 

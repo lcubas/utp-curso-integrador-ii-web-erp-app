@@ -7,6 +7,7 @@ import { UserPlus, Search } from "lucide-react";
 import { CustomerTable } from "@/components/customers/customer-table";
 import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
 import { Customer, Vehicle } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface CustomerWithRelations extends Customer {
   vehicles: Vehicle[];
@@ -39,7 +40,7 @@ export default function CustomersPage() {
       setFilteredCustomers(data);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al cargar los clientes");
+      toast.error("Error cargando los clientes");
     } finally {
       setIsLoading(false);
     }

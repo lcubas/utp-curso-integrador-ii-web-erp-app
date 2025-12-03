@@ -28,6 +28,7 @@ import {
   User,
   Vehicle,
 } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface InvoiceWithDetails extends Invoice {
   customer: Customer;
@@ -60,7 +61,7 @@ export function InvoiceDetailsDialog({
         setInvoice(data);
       } catch (error) {
         console.error("Error:", error);
-        alert("Error al cargar los detalles de la factura");
+        toast.error("Error al cargar los detalles de la factura");
         onClose();
       } finally {
         setIsLoading(false);

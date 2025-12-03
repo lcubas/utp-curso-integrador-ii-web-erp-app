@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { vehicleSchema, VehicleFormData } from "@/lib/validations/vehicle";
+import { toast } from "sonner";
 
 interface VehicleFormDialogProps {
   customerId: string;
@@ -63,7 +64,7 @@ export function VehicleFormDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al registrar el vehículo");
+      toast.error(error.message || "Error al registrar el vehículo");
     } finally {
       setIsLoading(false);
     }

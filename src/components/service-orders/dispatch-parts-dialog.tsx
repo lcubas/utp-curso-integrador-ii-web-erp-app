@@ -20,6 +20,7 @@ import type {
   ServiceOrder,
   Vehicle,
 } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface ServiceOrderWithParts extends ServiceOrder {
   customer: Customer;
@@ -52,7 +53,7 @@ export function DispatchPartsDialog({
 
   const handleDispatch = async () => {
     if (selectedParts.length === 0) {
-      alert("Debe seleccionar al menos un repuesto");
+      toast.warning("Debe seleccionar al menos un repuesto");
       return;
     }
 
@@ -71,7 +72,9 @@ export function DispatchPartsDialog({
       if (!response.ok) {
         const errorData = await response.json();
         if (errorData.details) {
-          alert(`Stock insuficiente:\n\n${errorData.details.join("\n")}`);
+          toast.warning(
+            `Stock insuficiente:\n\n${errorData.details.join("\n")}`,
+          );
         } else {
           throw new Error(errorData.error || "Error al despachar repuestos");
         }
@@ -80,7 +83,7 @@ export function DispatchPartsDialog({
 
       const result = await response.json();
       if (result.lowStockAlerts > 0) {
-        alert(
+        toast.warning(
           `Repuestos despachados. ${result.lowStockAlerts} repuesto(s) con stock bajo.`,
         );
       }
@@ -88,7 +91,7 @@ export function DispatchPartsDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al despachar repuestos");
+      toast.error(error.message || "Error al despachar repuestos");
     } finally {
       setIsLoading(false);
     }

@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function SolicitarCitaPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +65,7 @@ export default function SolicitarCitaPage() {
       setShowSuccess(true);
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al solicitar la cita");
+      toast.error(error.message || "Error al solicitar la cita");
     } finally {
       setIsLoading(false);
     }

@@ -38,6 +38,7 @@ import {
   ServiceOrder,
   Vehicle,
 } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface ServiceOrderWithDetails extends ServiceOrder {
   customer: Customer;
@@ -131,7 +132,7 @@ export function InvoiceForm({ onSuccess }: InvoiceFormProps) {
       onSuccess(newInvoice.id);
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al generar la factura");
+      toast.error(error.message || "Error al generar la factura");
     } finally {
       setIsLoading(false);
     }

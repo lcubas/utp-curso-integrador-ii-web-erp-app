@@ -8,6 +8,7 @@ import { InvoiceTable } from "@/components/invoices/invoice-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { InvoiceWithRelations } from "@/types";
+import { toast } from "sonner";
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<InvoiceWithRelations[]>([]);
@@ -32,7 +33,7 @@ export default function InvoicesPage() {
       setFilteredInvoices(data);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al cargar las facturas");
+      toast.error("Error al cargar las facturas");
     } finally {
       setIsLoading(false);
     }

@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { AppointmentTable } from "@/components/appointments/appointment-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppointmentWithRelations } from "@/types";
+import { toast } from "sonner";
 
 export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<AppointmentWithRelations[]>(
@@ -32,7 +33,7 @@ export default function AppointmentsPage() {
       setFilteredAppointments(data);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al cargar las citas");
+      toast.error("Error cargando las citas");
     } finally {
       setIsLoading(false);
     }

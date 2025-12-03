@@ -34,6 +34,7 @@ import {
   UpdateUserFormData,
 } from "@/lib/validations/user";
 import { User, UserRole } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface UserFormDialogProps {
   user?: User;
@@ -84,7 +85,7 @@ export function UserFormDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al guardar el usuario");
+      toast.error(error.message || "Error al guardar el usuario");
     } finally {
       setIsLoading(false);
     }

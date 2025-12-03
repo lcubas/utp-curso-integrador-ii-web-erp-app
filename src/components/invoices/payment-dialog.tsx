@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CreditCard } from "lucide-react";
 import { paymentSchema, PaymentFormData } from "@/lib/validations/invoice";
 import { Customer, Invoice, Payment } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 interface InvoiceWithPayments extends Invoice {
   customer: Customer;
@@ -82,7 +83,7 @@ export function PaymentDialog({
       onSuccess();
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Error al registrar el pago");
+      toast.error(error.message || "Error al registrar el pago");
     } finally {
       setIsLoading(false);
     }

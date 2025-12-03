@@ -7,6 +7,7 @@ import { UserPlus, Search } from "lucide-react";
 import { UserTable } from "@/components/users/user-table";
 import { UserFormDialog } from "@/components/users/user-form-dialog";
 import { User } from "@/app/generated/prisma/client";
+import { toast } from "sonner";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -29,7 +30,7 @@ export default function UsersPage() {
       setFilteredUsers(data);
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al cargar los usuarios");
+      toast.error("Error al cargar los usuarios");
     } finally {
       setIsLoading(false);
     }

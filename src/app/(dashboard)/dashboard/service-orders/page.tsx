@@ -8,6 +8,7 @@ import { ServiceOrderTable } from "@/components/service-orders/service-order-tab
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { ServiceOrderWithRelations } from "@/types";
+import { toast } from "sonner";
 
 export default function ServiceOrdersPage() {
   const [orders, setOrders] = useState<ServiceOrderWithRelations[]>([]);
@@ -42,7 +43,7 @@ export default function ServiceOrdersPage() {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error al cargar las órdenes");
+      toast.error("Error al cargar las órdenes");
     } finally {
       setIsLoading(false);
     }

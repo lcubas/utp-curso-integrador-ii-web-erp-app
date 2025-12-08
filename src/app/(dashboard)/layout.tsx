@@ -40,6 +40,7 @@ export default async function DashboardLayout({
   }
 
   const userData = {
+    id: userId,
     role: dbUser.role,
     name: dbUser.name,
     email: dbUser.email,

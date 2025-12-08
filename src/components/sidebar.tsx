@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useUserRole } from "@/lib/user-context";
+import { useUserContext } from "@/lib/user-context";
 import {
   LayoutDashboard,
   Users,
@@ -14,7 +14,6 @@ import {
   Receipt,
   Wrench,
   Calendar,
-  ShoppingCart,
 } from "lucide-react";
 
 interface MenuItem {
@@ -33,55 +32,49 @@ const menuItems: MenuItem[] = [
   },
   {
     label: "Usuarios",
-    href: "/dashboard/users",
+    href: "/users",
     icon: UserCog,
     roles: ["ADMIN"],
   },
   {
     label: "Clientes",
-    href: "/dashboard/customers",
+    href: "/customers",
     icon: Users,
     roles: ["ADMIN", "ASESOR"],
   },
   {
     label: "Repuestos",
-    href: "/dashboard/parts",
+    href: "/parts",
     icon: Package,
     roles: ["ADMIN", "ASESOR"],
   },
   {
-    label: "Nueva Orden",
-    href: "/dashboard/quotes",
-    icon: ShoppingCart,
-    roles: ["ADMIN", "ASESOR"],
-  },
-  {
     label: "Órdenes de Servicio",
-    href: "/dashboard/service-orders",
+    href: "/service-orders",
     icon: FileText,
     roles: ["ADMIN", "ASESOR", "MECANICO"],
   },
   {
     label: "Registrar Recepción",
-    href: "/dashboard/reception",
+    href: "/reception",
     icon: Wrench,
     roles: ["MECANICO"],
   },
   {
     label: "Registrar Revisión",
-    href: "/dashboard/revision",
+    href: "/revision",
     icon: ClipboardList,
     roles: ["MECANICO"],
   },
   {
     label: "Facturas",
-    href: "/dashboard/invoices",
+    href: "/invoices",
     icon: Receipt,
     roles: ["ADMIN", "ASESOR"],
   },
   {
     label: "Citas",
-    href: "/dashboard/appointments",
+    href: "/appointments",
     icon: Calendar,
     roles: ["ADMIN", "ASESOR"],
   },
@@ -89,7 +82,7 @@ const menuItems: MenuItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { role, name } = useUserRole();
+  const { role, name } = useUserContext();
 
   // Filtrar los items del menú según el rol del usuario
   const filteredMenuItems = menuItems.filter((item) => {
@@ -106,7 +99,7 @@ export function Sidebar() {
       <nav className="flex-1 px-4 space-y-1">
         {filteredMenuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname.includes(item.href);
 
           return (
             <Link
@@ -116,7 +109,7 @@ export function Sidebar() {
                 "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
                 isActive
                   ? "bg-orange-100 text-orange-600 font-medium"
-                  : "text-gray-700 hover:bg-gray-100",
+                  : "text-gray-700 hover:bg-gray-100"
               )}
             >
               <Icon className="w-5 h-5" />

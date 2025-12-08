@@ -4,6 +4,7 @@ import { User } from "@/app/generated/prisma/client";
 import { createContext, useContext, ReactNode } from "react";
 
 interface UserContextType {
+  id: User["id"];
   role: User["role"];
   name: User["name"];
   email: User["email"];
@@ -23,7 +24,7 @@ export function UserProvider({
   );
 }
 
-export function useUserRole() {
+export function useUserContext() {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error("useUserRole must be used within UserProvider");

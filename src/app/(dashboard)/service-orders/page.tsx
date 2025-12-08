@@ -9,8 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { ServiceOrderWithRelations } from "@/types";
 import { toast } from "sonner";
+import { useUserContext } from "@/lib/user-context";
 
 export default function ServiceOrdersPage() {
+  const { role } = useUserContext();
   const [orders, setOrders] = useState<ServiceOrderWithRelations[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<
     ServiceOrderWithRelations[]
@@ -18,7 +20,6 @@ export default function ServiceOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
-  const [userRole, setUserRole] = useState("");
 
   const fetchOrders = async () => {
     try {
@@ -32,15 +33,6 @@ export default function ServiceOrdersPage() {
       const data = await response.json();
       setOrders(data);
       setFilteredOrders(data);
-
-      // Obtener rol del usuario actual (simplificado, debería venir del contexto)
-      const userResponse = await fetch("/api/users");
-      if (userResponse.ok) {
-        const users = await userResponse.json();
-        if (users.length > 0) {
-          setUserRole(users[0].role);
-        }
-      }
     } catch (error) {
       console.error("Error:", error);
       toast.error("Error al cargar las órdenes");
@@ -64,7 +56,7 @@ export default function ServiceOrdersPage() {
           order.customer.name
             .toLowerCase()
             .includes(searchTerm.toLowerCase()) ||
-          order.vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase()),
+          order.vehicle.plate.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -79,7 +71,7 @@ export default function ServiceOrdersPage() {
   const enProcesoCount = orders.filter((o) => o.status === "EN_PROCESO").length;
   const pausadoCount = orders.filter((o) => o.status === "PAUSADO").length;
   const completadoCount = orders.filter(
-    (o) => o.status === "COMPLETADO",
+    (o) => o.status === "COMPLETADO"
   ).length;
 
   return (
@@ -93,8 +85,8 @@ export default function ServiceOrdersPage() {
             Gestiona las órdenes de servicio del taller
           </p>
         </div>
-        {["ADMIN", "ASESOR"].includes(userRole) && (
-          <Link href="/dashboard/quotes">
+        {["ADMIN", "ASESOR"].includes(String(role)) && (
+          <Link href="/service-orders/quotes">
             <Button>
               <Plus className="w-4 h-4 mr-2" />
               Nueva Orden
@@ -139,7 +131,7 @@ export default function ServiceOrdersPage() {
               <ServiceOrderTable
                 orders={filteredOrders}
                 onUpdate={fetchOrders}
-                userRole={userRole}
+                userRole={String(role)}
               />
             )}
           </TabsContent>

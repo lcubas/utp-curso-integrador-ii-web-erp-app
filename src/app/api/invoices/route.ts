@@ -38,7 +38,11 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        payments: true,
+        payments: {
+          include: {
+            user: true,
+          },
+        },
         user: true,
       },
       orderBy: { createdAt: "desc" },
